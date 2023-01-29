@@ -1,20 +1,20 @@
 package com.example.projectclient.services;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.projectclient.dto.ClientDTO;
 import com.example.projectclient.entities.Client;
 import com.example.projectclient.repositories.ClientRepository;
-import com.example.projectclient.services.exceptions.ResourceNotFoundException;
 import com.example.projectclient.services.exceptions.DatabaseException;
+import com.example.projectclient.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class ClientService {
@@ -23,9 +23,12 @@ public class ClientService {
 	private ClientRepository repository;
 	
 	@Transactional(readOnly = true)
-	public List<ClientDTO> findAll(){
-		List<Client> list = repository.findAll();
-		return list.stream().map(x -> new ClientDTO(x)).collect(Collectors.toList());
+	public Page<ClientDTO> findAllPaged(PageRequest pageRequest){
+		
+		Page<Client> list = repository.findAll(pageRequest);
+		
+		return list.map(x -> new ClientDTO(x));
+		
 	}
 	
 	@Transactional(readOnly = true)
